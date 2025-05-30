@@ -1,0 +1,61 @@
+From 132db665884f8d890bcd9da26baf21d1486629d8 Mon Sep 17 00:00:00 2001
+From: Jonathan Stroud <jonathan.stroud@amd.com>
+Date: Fri, 7 Mar 2025 11:17:01 -0700
+Subject: [PATCH] Update fancontrol for systems that can monitor Versal Done
+ bit
+
+On systems that can monitor Versal DONE bit, set the fans to minumum
+speed when the device is unprogrammed
+
+Signed-off-by: Jonathan Stroud <jonathan.stroud@amd.com>
+---
+ prog/pwm/fancontrol | 12 ++++++++++--
+ 1 file changed, 10 insertions(+), 2 deletions(-)
+
+diff --git a/prog/pwm/fancontrol b/prog/pwm/fancontrol
+index 886a7367..e8512963 100755
+--- a/prog/pwm/fancontrol
++++ b/prog/pwm/fancontrol
+@@ -521,6 +521,7 @@ trap 'restorefans 1' SIGHUP SIGINT
+ # main function
+ function UpdateFanSpeeds
+ {
++	local HAS_VDONE=$1
+ 	local fcvcount
+ 	local pwmo tsens fan mint maxt minsa minso minpwm maxpwm
+ 	local tval tlastval pwmpval fanval min_fanval one_fan one_fanval
+@@ -621,7 +622,9 @@ function UpdateFanSpeeds
+ 			echo "min_fanval=$min_fanval"
+ 		fi
+ 
+-		if (( $tval <= $mint ))
++		if [ "$HAS_VDONE" = true ] && [ $(gpioget $(gpiofind VERSAL_DONE)) == 0 ];
++		  then pwmval=$minpwm
++		elif (( $tval <= $mint ))
+ 		  then pwmval=$minpwm # below min temp, use defined min pwm
+ 		elif (( $tval >= $maxt ))
+ 		  then pwmval=$maxpwm # over max temp, use defined max pwm
+@@ -650,6 +653,11 @@ function UpdateFanSpeeds
+ 	done
+ }
+ 
++HAS_VDONE=false
++if gpiofind VERSAL_DONE; then
++	HAS_VDONE=true
++fi
++
+ echo 'Enabling PWM on fans...'
+ let fcvcount=0
+ while (( $fcvcount < ${#AFCPWM[@]} )) # go through all pwm outputs
+@@ -669,7 +677,7 @@ echo 'Starting automatic fan control...'
+ # main loop calling the main function at specified intervals
+ while true
+ do
+-	UpdateFanSpeeds
++	UpdateFanSpeeds $HAS_VDONE
+ 	# Sleep while still handling signals
+ 	sleep $INTERVAL &
+ 	wait
+-- 
+2.34.1
+

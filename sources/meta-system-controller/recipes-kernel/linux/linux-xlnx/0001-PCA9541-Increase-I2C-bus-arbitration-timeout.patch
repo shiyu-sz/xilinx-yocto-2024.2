@@ -1,0 +1,49 @@
+From e37885ec2ac0aaf7afeaf7a88ee76b0cca8770cf Mon Sep 17 00:00:00 2001
+From: Jonathan Stroud <jonathan.stroud@amd.com>
+Date: Thu, 22 May 2025 19:32:42 -0600
+Subject: [PATCH] PCA9541: Increase I2C bus arbitration timeout
+
+When u-boot has the bus acquired on the other host, it can hold the bus
+for much longer than 125ms.  Forcefully stealing the bus will result in
+u-boot hanging.  Increase arbitration timeout to 1 second to avoid this
+condition.
+
+Signed-off-by: Jonathan Stroud <jonathan.stroud@amd.com>
+---
+ drivers/i2c/muxes/i2c-mux-pca9541.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/i2c/muxes/i2c-mux-pca9541.c b/drivers/i2c/muxes/i2c-mux-pca9541.c
+index ce0fb69249a8..1d8f5c1353fc 100644
+--- a/drivers/i2c/muxes/i2c-mux-pca9541.c
++++ b/drivers/i2c/muxes/i2c-mux-pca9541.c
+@@ -64,8 +64,8 @@
+ #define busoff(x)	(!((x) & BUSON) || ((x) & BUSON) == BUSON)
+ 
+ /* arbitration timeouts, in jiffies */
+-#define ARB_TIMEOUT	(HZ / 8)	/* 125 ms until forcing bus ownership */
+-#define ARB2_TIMEOUT	(HZ / 4)	/* 250 ms until acquisition failure */
++#define ARB_TIMEOUT	(HZ)		/* 1 s until forcing bus ownership */
++#define ARB2_TIMEOUT	(2 * HZ)	/* 2 s until acquisition failure */
+ 
+ /* arbitration retry delays, in us */
+ #define SELECT_DELAY_SHORT	50
+@@ -229,6 +229,7 @@ static int pca9541_arbitrate(struct i2c_client *client)
+ 		 */
+ 		data->select_timeout = SELECT_DELAY_LONG;
+ 		if (time_is_before_eq_jiffies(data->arb_timeout)) {
++			dev_info(&client->dev, "I2C Bus Arbiter timeout, forcing take bus\n");
+ 			/* Time is up, take the bus and reset it. */
+ 			pca9541_reg_write(client,
+ 					  PCA9541_CONTROL,
+@@ -267,6 +268,7 @@ static int pca9541_select_chan(struct i2c_mux_core *muxc, u32 chan)
+ 		else
+ 			msleep(data->select_timeout / 1000);
+ 	} while (time_is_after_eq_jiffies(timeout));
++	dev_info(&client->dev, "Timeout acquiring I2C bus\n");
+ 
+ 	return -ETIMEDOUT;
+ }
+-- 
+2.34.1
+

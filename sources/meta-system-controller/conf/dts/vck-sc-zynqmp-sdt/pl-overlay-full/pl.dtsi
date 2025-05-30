@@ -1,0 +1,128 @@
+/dts-v1/;
+/plugin/;
+&fpga_full{
+	firmware-name = "project_1.bit.bin";
+};
+&amba{
+	clocking3: clocking3 {
+		compatible = "xlnx,fclk";
+		status = "okay";
+		assigned-clocks = <&zynqmp_clk 0x4a>;
+		assigned-clock-rates = <0x1659fd16>;
+		#clock-cells = <0x0>;
+		clock-output-names = "fabric_clk";
+		clocks = <&zynqmp_clk 0x4a>;
+	};
+	clocking2: clocking2 {
+		compatible = "xlnx,fclk";
+		status = "okay";
+		assigned-clocks = <&zynqmp_clk 0x49>;
+		assigned-clock-rates = <0x11e19751>;
+		#clock-cells = <0x0>;
+		clock-output-names = "fabric_clk";
+		clocks = <&zynqmp_clk 0x49>;
+	};
+	clocking1: clocking1 {
+		compatible = "xlnx,fclk";
+		status = "okay";
+		assigned-clocks = <&zynqmp_clk 0x48>;
+		assigned-clock-rates = <0x17d7746>;
+		#clock-cells = <0x0>;
+		clock-output-names = "fabric_clk";
+		clocks = <&zynqmp_clk 0x48>;
+	};
+	clocking0: clocking0 {
+		compatible = "xlnx,fclk";
+		status = "okay";
+		assigned-clocks = <&zynqmp_clk 0x47>;
+		assigned-clock-rates = <0x5f5dd19>;
+		#clock-cells = <0x0>;
+		clock-output-names = "fabric_clk";
+		clocks = <&zynqmp_clk 0x47>;
+	};
+	afi0: afi0 {
+		status = "okay";
+		compatible = "xlnx,afi-fpga";
+		resets = <&zynqmp_reset 0x74>,
+<&zynqmp_reset 0x75>,
+<&zynqmp_reset 0x76>,
+<&zynqmp_reset 0x77>;
+		config-afi = <0x0 0x0 0x1 0x0 0x2 0x0 0x3 0x0 0x4 0x0 0x5 0x0 0x6 0x0 0x7 0x0 0x8 0x0 0x9 0x0 0xa 0x0 0xb 0x0 0xc 0x0 0xd 0x0 0xe 0xa00 0xf 0x0>;
+	};
+};
+&amba{
+	SYSCTLR_SI5332: i2c@80000000 {
+		interrupts = <0x0 0x59 0x4>;
+		xlnx,iic-freq-khz = <0x64>;
+		compatible = "xlnx,axi-iic-2.1", "xlnx,xps-iic-2.00.a";
+		xlnx,scl-inertial-delay = <0x0>;
+		interrupt-parent = <&gic>;
+		xlnx,rable = <0x0>;
+		xlnx,ip-name = "axi_iic";
+		xlnx,disable-setup-violation-check = <0x0>;
+		reg = <0x0 0x80000000 0x0 0x1000>;
+		clocks = <&zynqmp_clk 0x47>;
+		xlnx,gpo-width = <0x1>;
+		xlnx,edk-iptype = "PERIPHERAL";
+		xlnx,static-timing-reg-width = <0x0>;
+		xlnx,sda-level = <0x1>;
+		status = "okay";
+		clock-names = "s_axi_aclk";
+		xlnx,ten-bit-adr = <0x0>;
+		xlnx,default-value = <0x0>;
+		interrupt-names = "iic2intc_irpt";
+		xlnx,iic-board-interface = "Custom";
+		xlnx,timing-reg-width = <0x20>;
+		xlnx,iic-freq = <0x186a0>;
+		xlnx,smbus-pmbus-host = <0x0>;
+		xlnx,name = "SYSCTLR_SI5332";
+		xlnx,axi-aclk-freq-mhz = <0x5f5dd19>;
+		xlnx,sda-inertial-delay = <0x0>;
+	};
+	debug_bridge_0: debug_bridge@80010000 {
+		xlnx,xvc-sw-id = <0x1>;
+		xlnx,fifo-style = "SUBCORE";
+		compatible = "xlnx,debug-bridge-3.0", "generic-uio";
+		xlnx,pcie-ext-cfg-next-ptr = <0x0>;
+		xlnx,num-bs-master = <0x0>;
+		xlnx,pcie-ext-cfg-vsec-id = <0x8>;
+		xlnx,major-version = <0xe>;
+		xlnx,rable = <0x0>;
+		xlnx,bscan-mux = <0x1>;
+		xlnx,xvc-hw-id = <0x1>;
+		xlnx,device-family = <0x0>;
+		xlnx,dclk-has-reset = <0x0>;
+		xlnx,ip-name = "debug_bridge";
+		xlnx,ir-width = <0x0>;
+		reg = <0x0 0x80010000 0x0 0x10000>;
+		xlnx,core-minor-alpha-ver = <0x61>;
+		clocks = <&zynqmp_clk 0x47>;
+		xlnx,xsdb-num-slaves = <0x0>;
+		xlnx,en-int-sim = <0x1>;
+		xlnx,clk-input-freq-hz = <0x11e1a300>;
+		xlnx,ir-id-instr = <0x0>;
+		xlnx,edk-iptype = "PERIPHERAL";
+		xlnx,pcie-ext-cfg-base-addr = <0x400>;
+		xlnx,build-revision = <0x0>;
+		xlnx,use-softbscan = <0x1>;
+		xlnx,ir-user1-instr = <0x0>;
+		xlnx,core-minor-ver = <0x0>;
+		xlnx,pcie-ext-cfg-vsec-rev-id = <0x0>;
+		status = "okay";
+		xlnx,chip-id = <0x0>;
+		clock-names = "s_axi_aclk";
+		xlnx,use-ext-bscan;
+		xlnx,tck-clock-ratio = <0x8>;
+		xlnx,minor-version = <0x1>;
+		xlnx,en-passthrough = <0x0>;
+		xlnx,core-type = <0x1>;
+		xlnx,user-scan-chain = <0x1>;
+		xlnx,use-bufr = <0x0>;
+		xlnx,pcie-ext-cfg-vsec-length = <0x20>;
+		xlnx,master-intf-type = <0x1>;
+		xlnx,design-type = <0x0>;
+		xlnx,debug-mode = <0x3>;
+		xlnx,name = "debug_bridge_0";
+		xlnx,core-major-ver = <0x1>;
+	};
+};

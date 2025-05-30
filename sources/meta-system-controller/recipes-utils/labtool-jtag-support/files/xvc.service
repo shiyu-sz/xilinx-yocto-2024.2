@@ -1,0 +1,13 @@
+[Unit]
+Description=Enable xvc service
+After=dfx-mgr.service
+
+[Service]
+Type=simple
+Restart=always
+NotifyAccess=all
+ExecStart=bash -c '/opt/labtools/bin/xvc_server -d $(ls -lt /sys/class/uio | grep debug_bridge | awk \'{print $9}\')'
+StandardOutput=journal+console
+
+[Install]
+WantedBy=multi-user.target
